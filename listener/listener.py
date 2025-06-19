@@ -6,6 +6,8 @@ from antlr4 import tree
 
 from AppModule.app.classes.design_unit_call import DesignUnitCall
 from antrl4_vhdl.vhdlListener import vhdlListener
+from antrl4_vhdl.vhdlParser import vhdlParser
+
 from listener.base import BaseListener
 from listener.tree_utils import TreeStorage
 
@@ -64,6 +66,7 @@ def generate_stubbed_class(klass_name, klass):
     return type(klass_name, (klass,), attributes)
 
 
+# generate_stubbed_class need for tree printing # only for debug
 class VHDL2AplanListener(BaseListener, generate_stubbed_class("MyClass", vhdlListener)):
 
     def __init__(self, filename, design_unit_call: DesignUnitCall | None = None):
@@ -72,17 +75,33 @@ class VHDL2AplanListener(BaseListener, generate_stubbed_class("MyClass", vhdlLis
         # set pointer
         self.tree = self.root
 
+    # need for tree printing # only for debug
     def makeBranchAndClimb(self, type):
         self.tree = self.tree.makeChild(type)
 
+    # need for tree printing # only for debug
     def climbBack(self):
         self.tree = self.tree.parent
 
+    # need for tree printing # only for debug
     def printTree(self):
         self.root.printDetailedSubTree()
+
+    def add_ctx_to_Debug(self, ctx):
+        super(VHDL2AplanListener, self).enterIdentifier(ctx)
+        txt = ctx.getText() + " " + str(type(ctx))
+        self.tree.addText(txt)
 
     # overrule one more time to store its text
     # basically this is all we want
     def enterIdentifier(self, ctx):
-        super(VHDL2AplanListener, self).enterIdentifier(ctx)
-        self.tree.addText(ctx.getText())
+
+        # need for tree printing # only for debug
+        self.add_ctx_to_Debug(ctx)
+
+    def enterPrimary_unit(self, ctx: vhdlParser.Primary_unitContext):
+        self.add_ctx_to_Debug(ctx)
+        print(ctx.getText())
+
+
+# def enterIdentifier(self, ctx):

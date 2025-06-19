@@ -118,5 +118,14 @@ class TranslationManager(BaseTranslationManager):
         self.logger.delimetr(color="blue")
         uniq_name = "ta"
         if listener.design_unit:
-           uniq_name =  listener.design_unit.ident_uniq_name
+            uniq_name = listener.design_unit.ident_uniq_name
+
+        # only for debug
+        tree = listener.tree
+
+        tree.mergeSelectedName()
+        tree.extractDesignUnit()
+
+        tree.printSubTree()
+
         return uniq_name
