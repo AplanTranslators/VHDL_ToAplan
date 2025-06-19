@@ -85,19 +85,16 @@ class InputStream(object):
 
 
 class TranslationManager(BaseTranslationManager):
-    file_name = None
+    program = Program()
 
-    def setup(self, data, file_name):
+    def setup(self, file_name):
+        self.program.file_path = file_name
+        self.logger.delimetr(color="blue", text=f"Read file {file_name}")
         self.logger.info("Set up translator environment \n", color="bold_yellow")
-        self.file_name = file_name
-        lexer = vhdlLexer(InputStream(data))
-
+        lexer = vhdlLexer(FileStream(file_name))
         stream = CommonTokenStream(lexer)
-
         parser = vhdlParser(stream)
-
         self.tree = parser.design_file()
-
         self.walker = ParseTreeWalker()
 
     def translate(self, design_unit_call: DesignUnitCall | None = None):
@@ -106,20 +103,9 @@ class TranslationManager(BaseTranslationManager):
         self.logger.info("Translation process start...", color="bold_yellow")
 
         listener: VHDL2AplanListener = VHDL2AplanListener(
-            self.file_name, design_unit_call
+            self.program.file_path, design_unit_call
         )
         self.walker.walk(listener, self.tree)
-        program = Program()
-        self.logger.info(f"File tranlation process finished!", color="bold_yellow")
-        self.logger.info(
-            f"File {program.file_path}  tranlation process finished!",
-            color="bold_purple",
-        )
-        self.logger.delimetr(color="blue")
-        uniq_name = "ta"
-        if listener.design_unit:
-            uniq_name = listener.design_unit.ident_uniq_name
-
         # only for debug
         tree = listener.tree
 
@@ -128,4 +114,13 @@ class TranslationManager(BaseTranslationManager):
 
         tree.printSubTree()
 
-        return uniq_name
+        self.logger.info(f"File tranlation process finished!", color="bold_yellow")
+        self.logger.info(
+            f"File {self.program.file_path}  tranlation process finished!",
+            color="bold_purple",
+        )
+        self.logger.delimetr(color="blue")
+
+        #
+        if listener.design_unit:
+            return listener.design_unit.ident_uniq_name
