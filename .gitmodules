@@ -1,0 +1,6 @@
+[submodule "VHDL_Examples"]
+	path = VHDL_Examples
+	url = https://github.com/AplanTranslators/VHDL_Examples
+[submodule "AppModule"]
+	path = AppModule
+	url = https://github.com/AplanTranslators/AppModule
