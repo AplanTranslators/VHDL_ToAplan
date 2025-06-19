@@ -70,6 +70,7 @@ def generate_stubbed_class(klass_name, klass):
 class VHDL2AplanListener(BaseListener, generate_stubbed_class("MyClass", vhdlListener)):
 
     def __init__(self, filename, design_unit_call: DesignUnitCall | None = None):
+        BaseListener().__init__(design_unit_call)
         # instantiate a tree storage structure
         self.root = TreeStorage(filename, "file")
         # set pointer
