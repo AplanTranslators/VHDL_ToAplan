@@ -19,7 +19,7 @@ from translator.classes.declarations.architecture import (
     ArchitectureBodyDeclTranslator,
     ArchitectureDeclTranslator,
 )
-from translator.classes.declarations.signal import SignalDeclTranslator
+from translator.classes.declarations.block_decl import BlockDeclTranslator
 from translator.classes.expressions.expression import ExpressionTranslator
 from translator.classes.expressions.identifier import IdentifierTranslator
 from translator.classes.expressions.literal import LiteralTranslator
@@ -30,7 +30,7 @@ TRANSLATOR_NAMES = Literal[
     "arc_decl",
     "expr",
     "literal",
-    "signal_decl",
+    "block_decl",
     "ident",
 ]
 
@@ -60,7 +60,7 @@ class Translator:
         "arc_decl": ArchitectureBodyDeclTranslator,
         "expr": ExpressionTranslator,
         "literal": LiteralTranslator,
-        "signal_decl": SignalDeclTranslator,
+        "block_decl": BlockDeclTranslator,
         "ident": IdentifierTranslator,
     }
 

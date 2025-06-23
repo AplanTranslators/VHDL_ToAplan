@@ -7,10 +7,10 @@ from AppModule.app.classes.element_types import ElementsTypes
 from antrl4_vhdl.vhdlParser import vhdlParser
 
 
-class SignalDeclTranslator(BaseTranslator):
+class BlockDeclTranslator(BaseTranslator):
     decl_index = None
     decl_unique = None
-
+    expression = None
     if typing.TYPE_CHECKING:
         from translator.translator import Translator
 
@@ -20,9 +20,17 @@ class SignalDeclTranslator(BaseTranslator):
     def reset(self):
         self.decl_index = None
         self.decl_unique = None
+        self.expression = None
 
-    def translate(self, ctx: vhdlParser.Signal_declarationContext) -> None:
-        subtype_indication = ctx.subtype_indication()
+    def translate(self, ctx: vhdlParser.Block_declarative_itemContext) -> None:
+        decl: vhdlParser.Signal_declarationContext = ctx.signal_declaration()
+        if decl:
+            subtype_indication = decl.subtype_indication()
+            identifier_ctx = decl.identifier_list().identifier(0)
+            self.expression = decl.expression()
+        else:
+            ValueError("Unhandled block decl context")
+
         if subtype_indication:
             subtype_indication: str = self.subtypeIndication_Translate(
                 subtype_indication
@@ -32,7 +40,6 @@ class SignalDeclTranslator(BaseTranslator):
         else:
             ValueError("Not found type")
 
-        identifier_ctx = ctx.identifier_list().identifier(0)
         decl = Declaration(
             decl_type,
             identifier_ctx.getText(),
@@ -49,9 +56,7 @@ class SignalDeclTranslator(BaseTranslator):
             self.decl_index,
         ) = self.design_unit.declarations.addElement(decl)
 
-        expression = ctx.expression()
-
-        if not expression:
+        if not self.expression:
             return
 
         self.last_element_type = ElementsTypes.ASSIGN_ELEMENT
@@ -61,11 +66,9 @@ class SignalDeclTranslator(BaseTranslator):
             ctx,
         )
 
-    def exit(self, ctx: vhdlParser.Interface_signal_declarationContext):
+    def exit(self, ctx: vhdlParser.Block_declarative_itemContext):
 
-        expression = ctx.expression()
-
-        if not expression:
+        if not self.expression:
             return
         (
             action_pointer,

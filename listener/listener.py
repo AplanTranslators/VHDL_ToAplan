@@ -57,12 +57,14 @@ class VHDL2AplanListener(BaseListener, vhdlListener):
     # =========================================================================================
     # DECLS
     # =========================================================================================
-    def enterSignal_declaration(self, ctx: vhdlParser.Signal_declarationContext):
-        self.translator.translate("signal_decl", ctx)
+    def enterBlock_declarative_item(
+        self, ctx: vhdlParser.Block_declarative_itemContext
+    ):
+        self.translator.translate("block_decl", ctx)
         pass
 
-    def exitSignal_declaration(self, ctx: vhdlParser.Signal_declarationContext):
-        self.translator.exit("signal_decl", ctx)
+    def exitBlock_declarative_item(self, ctx: vhdlParser.Block_declarative_itemContext):
+        self.translator.exit("block_decl", ctx)
         pass
 
     # =========================================================================================
