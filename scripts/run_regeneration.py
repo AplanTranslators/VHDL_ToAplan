@@ -11,14 +11,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "-e_path",
         metavar="",
-        help="Path to system verilog examples list file",
+        help="Path to vhdl examples list file",
         nargs="?",
     )
 
     parser.add_argument(
         "-path",
         metavar="",
-        help="Path to system verilog(.sv) file",
+        help="Path to vhdl(.sv) file",
         nargs="?",
     )
 

@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, overload
 
 from AppModule.app.classes.case_stmt import CaseStmt
 from AppModule.app.utils.counters import CounterTypes, Counters
@@ -13,8 +13,26 @@ from AppModule.app.classes.structure import Structure, StructureArray
 from AppModule.app.classes.design_unit import DesignUnit
 from AppModule.app.classes.element_types import ElementsTypes
 from AppModule.app.classes.tasks import TaskStmt
+from translator.classes.declarations.entity import EntityDeclTranslator
+from translator.classes.declarations.port import InterfacePortDeclTranslator
+from translator.classes.declarations.architecture import (
+    ArchitectureBodyDeclTranslator,
+    ArchitectureDeclTranslator,
+)
+from translator.classes.declarations.signal import SignalDeclTranslator
+from translator.classes.expressions.expression import ExpressionTranslator
+from translator.classes.expressions.identifier import IdentifierTranslator
+from translator.classes.expressions.literal import LiteralTranslator
 
-TRANSLATOR_NAMES = Literal[""]
+TRANSLATOR_NAMES = Literal[
+    "entity_decl",
+    "int_port_decl",
+    "arc_decl",
+    "expr",
+    "literal",
+    "signal_decl",
+    "ident",
+]
 
 
 class Translator:
@@ -36,7 +54,15 @@ class Translator:
     def current_genvar_value(self, value: Tuple[str, int] | None):
         self._current_genvar_value = value
 
-    _translators: dict[str, type] = {}
+    _translators: dict[str, type] = {
+        "entity_decl": EntityDeclTranslator,
+        "int_port_decl": InterfacePortDeclTranslator,
+        "arc_decl": ArchitectureBodyDeclTranslator,
+        "expr": ExpressionTranslator,
+        "literal": LiteralTranslator,
+        "signal_decl": SignalDeclTranslator,
+        "ident": IdentifierTranslator,
+    }
 
     def __init__(self):
         pass
@@ -55,6 +81,10 @@ class Translator:
     def translate(self, trnslt_name: TRANSLATOR_NAMES, *args, **kwargs):
         translator = self.getTranslator(trnslt_name)
         return translator.translate(*args, **kwargs)
+
+    def exit(self, trnslt_name: TRANSLATOR_NAMES, *args, **kwargs):
+        translator = self.getTranslator(trnslt_name)
+        return translator.exit(*args, **kwargs)
 
     def isInsideTheTask(self):
         structure: Structure | None = self._structure_pointer_list.getLastElement()

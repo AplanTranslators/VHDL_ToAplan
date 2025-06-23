@@ -102,17 +102,8 @@ class TranslationManager(BaseTranslationManager):
 
         self.logger.info("Translation process start...", color="bold_yellow")
 
-        listener: VHDL2AplanListener = VHDL2AplanListener(
-            self.program.file_path, design_unit_call
-        )
+        listener: VHDL2AplanListener = VHDL2AplanListener(design_unit_call)
         self.walker.walk(listener, self.tree)
-        # only for debug
-        tree = listener.tree
-
-        tree.mergeSelectedName()
-        tree.extractDesignUnit()
-
-        tree.printSubTree()
 
         self.logger.info(f"File tranlation process finished!", color="bold_yellow")
         self.logger.info(
