@@ -20,6 +20,7 @@ class ArchitectureBodyDeclTranslator(BaseTranslator):
         )
 
         initial_name = self.design_unit.ident_uniq_name_upper + "_" + beh_identifier
+
         structure = Structure(
             initial_name,
             ctx.getSourceInterval(),

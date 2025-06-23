@@ -169,41 +169,35 @@ class Translator:
                 struct = CaseStmt(
                     name,
                     (0, 0),
-                    self.counters.get(counter_type),
                 )
 
             elif element_type == ElementsTypes.IF_STATEMENT_ELEMENT:
                 struct = IfStmt(
                     name,
                     (0, 0),
-                    self.counters.get(counter_type),
                 )
             elif element_type == ElementsTypes.FOREVER_ELEMENT:
                 struct = ForeverStmt(
                     name,
                     (0, 0),
-                    self.counters.get(counter_type),
                 )
 
             elif element_type == ElementsTypes.WHILE_ELEMENT:
                 struct = WhileStmt(
                     name,
                     (0, 0),
-                    self.counters.get(counter_type),
                 )
 
             elif element_type == ElementsTypes.LOOP_ELEMENT:
                 struct = LoopStmt(
                     name,
                     (0, 0),
-                    self.counters.get(counter_type),
                 )
             else:
                 struct = Structure(
                     name,
                     (0, 0),
                     element_type,
-                    self.counters.get(counter_type),
                 )
 
             struct.parametrs = tmp
