@@ -17,23 +17,22 @@ class LiteralTranslator(BaseTranslator):
             return
 
         literal: vhdlParser.Enumeration_literalContext = ctx.enumeration_literal()
+        element_type = ElementsTypes.IDENTIFIER_ELEMENT
         if literal:
             value = literal.getText()
             value = self.str_formater.valuesToAplanStandart(value)
-            index = self.last_node_array.addElement(
-                Node(value, ctx.getSourceInterval(), ElementsTypes.NUMBER_ELEMENT)
-            )
-            node = self.last_node_array.getElementByIndex(index)
-            decl = self.design_unit.declarations.getElement(node.identifier)
-            if decl:
-                node.design_unit_name = self.design_unit.ident_uniq_name
+            element_type = ElementsTypes.NUMBER_ELEMENT
+        else:
+            raise TypeError(f"Unhandled literal type  for {ctx.getText()}")
+        index = self.last_node_array.addElement(
+            Node(value, ctx.getSourceInterval(), element_type)
+        )
+        node = self.last_node_array.getElementByIndex(index)
+        decl = self.design_unit.declarations.getElement(node.identifier)
+        if decl:
+            node.design_unit_name = self.design_unit.ident_uniq_name
 
             # todo
             # node.identifier = self._translator_ptr.translate(
             #     "param_call", node.identifier
             # )
-
-        pass
-
-        # if not self.last_beh_name:
-        #     raise ValueError("Unfound beh name")
