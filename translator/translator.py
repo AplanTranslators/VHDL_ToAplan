@@ -206,7 +206,6 @@ class Translator:
 
             sv_structure.behavior.append(struct)
             self._structure_pointer_list.addElement(struct)
-            self.counters.incriese(counter_type),
 
     # def extractSensetive(self, ctx):
     #     res = ""
