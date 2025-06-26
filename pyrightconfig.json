@@ -4,8 +4,9 @@
         "**/.venv",
         "**/venv",
         "**/env",
-        "**/node_modules"
+        "**/node_modules",
+        "**/antrl4_vhdl"
     ],
     "reportMissingImports": true,
-    "reportMissingTypeStubs": false
+    "reportMissingTypeStubs": false,
 }

@@ -39,7 +39,7 @@ class BaseTranslator:
     def translate(self, ctx) -> None:
         raise TypeError("Run base translator")
 
-    def exit(self) -> None:
+    def exit(self, ctx) -> None:
         raise TypeError("Run base exit")
 
     def findStruct(
@@ -92,7 +92,15 @@ class BaseTranslator:
         raise TypeError("unhandled subtype")
 
     @property
-    def design_unit_call(self) -> DesignUnitCall:
+    def last_arch(self) -> Typedef | None:
+        return self._translator_ptr.last_arch
+
+    @last_arch.setter
+    def last_arch(self, value: Typedef | None):
+        self._translator_ptr.last_arch = value
+
+    @property
+    def design_unit_call(self) -> DesignUnitCall | None:
         return self._translator_ptr.design_unit_call
 
     @property
@@ -100,7 +108,7 @@ class BaseTranslator:
         return self._program.design_units
 
     @property
-    def design_unit(self) -> DesignUnit:
+    def design_unit(self) -> DesignUnit | None:
         return self._translator_ptr._design_unit
 
     @design_unit.setter
@@ -112,7 +120,7 @@ class BaseTranslator:
         return self._translator_ptr._structure_pointer_list
 
     @property
-    def decl_type_array(self) -> DeclTypeArray:
+    def decl_type_array(self) -> DeclTypeArray | None:
         return self._translator_ptr.decl_type_array
 
     @decl_type_array.setter
@@ -120,7 +128,7 @@ class BaseTranslator:
         self._translator_ptr.decl_type_array = value
 
     @property
-    def last_node_array(self) -> NodeArray:
+    def last_node_array(self) -> NodeArray | None:
         return self._translator_ptr.last_node_array
 
     @last_node_array.setter
@@ -132,7 +140,7 @@ class BaseTranslator:
         return self._translator_ptr.last_element_type
 
     @last_element_type.setter
-    def last_element_type(self, value: ElementsTypes | None):
+    def last_element_type(self, value: ElementsTypes):
         self._translator_ptr.last_element_type = value
 
     @property
@@ -143,21 +151,13 @@ class BaseTranslator:
     def last_operator(self, value: str | None):
         self._translator_ptr.last_operator = value
 
-    def getLastNameSpaceLevel(self) -> bool:
+    def getLastNameSpaceLevel(self) -> int:
         return self._translator_ptr.getLastNameSpaceLevel()
 
     def getProtocolParams(self):
         self.findStruct()
         if self.last_struct:
             return self.last_struct.parametrs
-
-    @property
-    def current_genvar_value(self) -> bool:
-        return self._translator_ptr._current_genvar_value
-
-    @current_genvar_value.setter
-    def current_genvar_value(self, value: typing.Tuple[str, int] | None):
-        self._translator_ptr._current_genvar_value = value
 
     def getLastTypedef(self) -> Typedef | None:
         if self.design_unit:

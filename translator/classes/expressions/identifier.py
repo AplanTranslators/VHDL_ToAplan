@@ -19,12 +19,17 @@ class IdentifierTranslator(BaseTranslator):
         self,
         ctx: vhdlParser.IdentifierContext,
     ) -> None:
+        from_arch = False
+        arc_decl: Declaration | None = None
 
         if self.last_node_array is None:
             return
-        
+
         identifier: str = ctx.getText()
-        if DeclTypes.checkType(identifier,[]) != DeclTypes.NONE:
+
+        if (
+            DeclTypes.checkType(identifier, []) != DeclTypes.NONE
+        ):  # types removing from translation
             return
 
         if self.last_node_array.isAssign():
@@ -41,6 +46,11 @@ class IdentifierTranslator(BaseTranslator):
                         )
                     )
 
+        if self.last_arch and self.last_arch.checkDecl(identifier):
+            from_arch = True
+            arc_decl: Declaration = self.design_unit.declarations.getLastElement()
+            identifier = f"{arc_decl.getName()}.{identifier}"
+
         index = self.last_node_array.addElement(
             Node(
                 identifier,
@@ -50,10 +60,18 @@ class IdentifierTranslator(BaseTranslator):
         )
         node = self.last_node_array.getElementByIndex(index)
 
-        identifier, decl = self.design_unit.declarations.replaceDeclName(identifier)
+        if from_arch:
+            identifier_new, decl = self.design_unit.declarations.replaceDeclName(
+                arc_decl.identifier
+            )
+            identifier_new = identifier
+        else:
+            identifier_new, decl = self.design_unit.declarations.replaceDeclName(
+                identifier
+            )
 
         if isinstance(decl, Declaration):
-            node.identifier = identifier
+            node.identifier = identifier_new
             if self.design_unit.element_type == ElementsTypes.CLASS_ELEMENT:
                 node.design_unit_name = "object_pointer"
             else:

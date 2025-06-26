@@ -19,7 +19,7 @@ class InterfacePortDeclTranslator(BaseTranslator):
 
         # data_check_type = DeclTypes.checkType(sub_type, [])
 
-        self.decl_type_array.addElement(
+        self.decl_type_array.addElement(  # type: ignore
             DeclType(
                 sub_type,
                 "",
@@ -68,11 +68,10 @@ class InterfacePortDeclTranslator(BaseTranslator):
             # if action_pointer:
             #     port.expression = assign_name
             #     port.action = action_pointer
-
-            decl_unique, self.decl_index = self.design_unit.declarations.addElement(
+            decl_unique, self.decl_index = self.design_unit.declarations.addElement(  # type: ignore
                 port
             )
 
         if self.need_delete_type:
-            self.decl_type_array.removeLastElement()
+            self.decl_type_array.removeLastElement()  # type: ignore
             self.need_delete_type = False

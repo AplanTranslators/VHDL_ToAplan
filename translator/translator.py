@@ -1,6 +1,7 @@
-from typing import Literal, Tuple, overload
+from typing import Literal, Optional, Tuple, overload
 
 from AppModule.app.classes.case_stmt import CaseStmt
+from AppModule.app.classes.typedef import Typedef
 from AppModule.app.utils.counters import CounterTypes, Counters
 from AppModule.app.classes.declarations import DeclTypeArray
 from AppModule.app.classes.if_stmt import IfStmt
@@ -38,21 +39,14 @@ TRANSLATOR_NAMES = Literal[
 class Translator:
     counters = Counters()
     design_unit_call: DesignUnitCall | None = None
-    _design_unit: DesignUnit | None = None
+    _design_unit: Optional[DesignUnit] | None = None
     _structure_pointer_list: StructureArray = StructureArray()
     _cache = {}
     decl_type_array: DeclTypeArray | None = DeclTypeArray()
     last_node_array: NodeArray | None = None
     last_element_type: ElementsTypes = ElementsTypes.NONE_ELEMENT
     last_operator: str | None = None
-
-    @property
-    def current_genvar_value(self) -> bool:
-        return self._current_genvar_value
-
-    @current_genvar_value.setter
-    def current_genvar_value(self, value: Tuple[str, int] | None):
-        self._current_genvar_value = value
+    last_arch: Typedef | None = None
 
     _translators: dict[str, type] = {
         "entity_decl": EntityDeclTranslator,
