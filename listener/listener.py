@@ -57,15 +57,18 @@ class VHDL2AplanListener(BaseListener, vhdlListener):
     # =========================================================================================
     # DECLS
     # =========================================================================================
-    def enterBlock_declarative_item(
-        self, ctx: vhdlParser.Block_declarative_itemContext
-    ):
-        self.translator.translate("block_decl", ctx)
-        pass
 
-    def exitBlock_declarative_item(self, ctx: vhdlParser.Block_declarative_itemContext):
-        self.translator.exit("block_decl", ctx)
-        pass
+    def enterSignal_declaration(self, ctx: vhdlParser.Signal_declarationContext):
+        self.translator.translate("var_decl", ctx)
+
+    def exitSignal_declaration(self, ctx: vhdlParser.Signal_declarationContext):
+        self.translator.exit("var_decl", ctx)
+
+    def enterVariable_declaration(self, ctx: vhdlParser.Variable_declarationContext):
+        self.translator.translate("var_decl", ctx)
+
+    def exitVariable_declaration(self, ctx: vhdlParser.Variable_declarationContext):
+        self.translator.translate("var_decl", ctx)
 
     # =========================================================================================
     # PORT
@@ -87,22 +90,12 @@ class VHDL2AplanListener(BaseListener, vhdlListener):
     # =========================================================================================
 
     def enterArchitecture_body(self, ctx: vhdlParser.Architecture_bodyContext):
-        self.translator.translate("arc_decl", ctx)
+        self.translator.translate("arch_decl", ctx)
+        # bodyPrint(ctx)
         pass
 
     def exitArchitecture_body(self, ctx: vhdlParser.Architecture_bodyContext):
-        self.translator.exit("arc_decl", ctx)
-        pass
-
-    def enterArchitecture_statement_part(
-        self, ctx: vhdlParser.Architecture_statement_partContext
-    ):
-        pass
-
-    # Exit a parse tree produced by vhdlParser#architecture_statement_part.
-    def exitArchitecture_statement_part(
-        self, ctx: vhdlParser.Architecture_statement_partContext
-    ):
+        self.translator.exit("arch_decl", ctx)
         pass
 
     # =========================================================================================
@@ -120,6 +113,47 @@ class VHDL2AplanListener(BaseListener, vhdlListener):
         self, ctx: vhdlParser.Secondary_unit_declarationContext
     ):
         pass
+
+    # =========================================================================================
+    # ASSIGNMENT
+    # =========================================================================================
+    def enterSignal_assignment_statement(
+        self, ctx: vhdlParser.Signal_assignment_statementContext
+    ):
+        self.translator.translate("assignment", ctx)
+        pass
+
+    def exitSignal_assignment_statement(
+        self, ctx: vhdlParser.Signal_assignment_statementContext
+    ):
+        self.translator.exit("assignment", ctx)
+        pass
+
+    def enterVariable_assignment_statement(
+        self, ctx: vhdlParser.Variable_assignment_statementContext
+    ):
+        self.translator.translate("assignment", ctx)
+        pass
+
+    def exitVariable_assignment_statement(
+        self, ctx: vhdlParser.Variable_assignment_statementContext
+    ):
+        self.translator.exit("assignment", ctx)
+        pass
+
+    def enterProcess_statement(self, ctx: vhdlParser.Process_statementContext):
+        self.translator.translate("process_Decl", ctx)
+        pass
+
+    def exitProcess_statement(self, ctx: vhdlParser.Process_statementContext):
+        self.translator.exit("process_Decl", ctx)
+        pass
+
+    # =========================================================================================
+    # ASSIGNMENT
+    # =========================================================================================
+    def enterLogical_operator(self, ctx: vhdlParser.Logical_operatorContext):
+        self.translator.translate("logic_operator", ctx)
 
 
 # def enterIdentifier(self, ctx):

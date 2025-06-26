@@ -4,10 +4,11 @@ from AppModule.app.classes.protocols import BodyElement
 from translator.classes.base_translator import BaseTranslator
 from AppModule.app.classes.declarations import DeclTypes
 from AppModule.app.classes.element_types import ElementsTypes
+from AppModule.app.classes.protocols import Protocol
 from antrl4_vhdl.vhdlParser import vhdlParser
 
 
-class BlockDeclTranslator(BaseTranslator):
+class VarDeclTranslator(BaseTranslator):
     decl_index = None
     decl_unique = None
     if typing.TYPE_CHECKING:
@@ -20,15 +21,18 @@ class BlockDeclTranslator(BaseTranslator):
         self.decl_index = None
         self.decl_unique = None
 
-    def translate(self, ctx: vhdlParser.Block_declarative_itemContext) -> None:
+    def translate(
+        self,
+        ctx: (
+            vhdlParser.Signal_declarationContext
+            | vhdlParser.Variable_declarationContext
+        ),
+    ) -> None:
         expression = None
-        decl: vhdlParser.Signal_declarationContext = ctx.signal_declaration()
-        if decl:
-            subtype_indication = decl.subtype_indication()
-            identifier_ctx = decl.identifier_list().identifier(0)
-            expression = decl.expression()
-        else:
-            ValueError("Unhandled block decl context")
+
+        subtype_indication = ctx.subtype_indication()
+        identifier_ctx = ctx.identifier_list().identifier(0)
+        expression = ctx.expression()
 
         if subtype_indication:  # type: ignore
             subtype_indication: str = self.subtypeIndication_Translate(
@@ -70,13 +74,15 @@ class BlockDeclTranslator(BaseTranslator):
             ctx,
         )
 
-    def exit(self, ctx: vhdlParser.Block_declarative_itemContext):
-        decl: vhdlParser.Signal_declarationContext = ctx.signal_declaration()
-        if not decl:
-            self.reset()
-            return
+    def exit(
+        self,
+        ctx: (
+            vhdlParser.Signal_declarationContext
+            | vhdlParser.Variable_declarationContext
+        ),
+    ):
 
-        if not decl.expression():
+        if not ctx.expression():
             return
 
         (

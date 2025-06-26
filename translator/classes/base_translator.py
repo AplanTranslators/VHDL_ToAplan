@@ -36,8 +36,12 @@ class BaseTranslator:
         self.inside_the_task = False
         self.last_struct: Structure | None = None
 
+    def removeLastStructPointer(self):
+        
+        self._translator_ptr.removeLastStructPointer()
+
     def translate(self, ctx) -> None:
-        raise TypeError("Run base translator")
+        pass
 
     def exit(self, ctx) -> None:
         raise TypeError("Run base exit")

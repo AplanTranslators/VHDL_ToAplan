@@ -14,25 +14,30 @@ from AppModule.app.classes.structure import Structure, StructureArray
 from AppModule.app.classes.design_unit import DesignUnit
 from AppModule.app.classes.element_types import ElementsTypes
 from AppModule.app.classes.tasks import TaskStmt
+from translator.classes.assignments.assignment import AssignmentTranslator
 from translator.classes.declarations.entity import EntityDeclTranslator
 from translator.classes.declarations.port import InterfacePortDeclTranslator
 from translator.classes.declarations.architecture import (
     ArchitectureBodyDeclTranslator,
-    ArchitectureDeclTranslator,
 )
-from translator.classes.declarations.block_decl import BlockDeclTranslator
+from translator.classes.declarations.process import ProcessDeclTranslator
+from translator.classes.declarations.var_decl import VarDeclTranslator
 from translator.classes.expressions.expression import ExpressionTranslator
 from translator.classes.expressions.identifier import IdentifierTranslator
 from translator.classes.expressions.literal import LiteralTranslator
+from translator.classes.expressions.operator import LogicalOperatorTranslator
 
 TRANSLATOR_NAMES = Literal[
     "entity_decl",
     "int_port_decl",
-    "arc_decl",
+    "arch_decl",
     "expr",
     "literal",
-    "block_decl",
+    "var_decl",
     "ident",
+    "assignment",
+    "process_Decl",
+    "logic_operator"
 ]
 
 
@@ -51,11 +56,14 @@ class Translator:
     _translators: dict[str, type] = {
         "entity_decl": EntityDeclTranslator,
         "int_port_decl": InterfacePortDeclTranslator,
-        "arc_decl": ArchitectureBodyDeclTranslator,
+        "arch_decl": ArchitectureBodyDeclTranslator,
         "expr": ExpressionTranslator,
         "literal": LiteralTranslator,
-        "block_decl": BlockDeclTranslator,
+        "var_decl": VarDeclTranslator,
         "ident": IdentifierTranslator,
+        "assignment": AssignmentTranslator,
+        "process_Decl": ProcessDeclTranslator,
+        "logic_operator":LogicalOperatorTranslator
     }
 
     def __init__(self):
@@ -115,36 +123,10 @@ class Translator:
         element_type: ElementsTypes,
         sensetive: str | None = None,
     ):
-        counter_type: CounterTypes = self.counters.types.STRUCT_COUNTER
         sv_structure: Structure | None = self._structure_pointer_list.getLastElement()
 
         if sv_structure:
             protocol_params = self.getProtocolParams()
-            beh_index = sv_structure.getLastBehaviorIndex()
-            if beh_index is not None:
-                if element_type == ElementsTypes.FOREVER_ELEMENT:
-                    sv_structure.behavior[beh_index].addBodyElement(
-                        BodyElement(
-                            identifier="Sensetive({0}_{1}, {2})".format(
-                                name,
-                                self.counters.get(counter_type),
-                                sensetive,
-                            ),
-                            element_type=ElementsTypes.PROTOCOL_ELEMENT,
-                            parametrs=protocol_params,
-                        )
-                    )
-                else:
-                    sv_structure.behavior[beh_index].addBodyElement(
-                        BodyElement(
-                            identifier="{0}_{1}".format(
-                                name,
-                                self.counters.get(counter_type),
-                            ),
-                            element_type=ElementsTypes.PROTOCOL_ELEMENT,
-                            parametrs=protocol_params,
-                        )
-                    )
 
             tmp: ParametrArray = ParametrArray()
             if isinstance(sv_structure, TaskStmt):
@@ -198,6 +180,30 @@ class Translator:
             struct.inside_the_task = inside_the_task
             struct.addInitProtocol()
 
+            beh_index = sv_structure.getLastBehaviorIndex()
+            if beh_index is not None:
+                if element_type == ElementsTypes.FOREVER_ELEMENT:
+                    sv_structure.behavior[beh_index].addBodyElement(
+                        BodyElement(
+                            identifier="Sensetive({0}, {2})".format(
+                                struct.getName(False),
+                                sensetive,
+                            ),
+                            element_type=ElementsTypes.PROTOCOL_ELEMENT,
+                            parametrs=protocol_params,
+                        )
+                    )
+                else:
+                    sv_structure.behavior[beh_index].addBodyElement(
+                        BodyElement(
+                            identifier="{0}".format(
+                                struct.getName(False),
+                            ),
+                            element_type=ElementsTypes.PROTOCOL_ELEMENT,
+                            parametrs=protocol_params,
+                        )
+                    )
+           
             sv_structure.behavior.append(struct)
             self._structure_pointer_list.addElement(struct)
 

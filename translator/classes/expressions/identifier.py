@@ -20,7 +20,7 @@ class IdentifierTranslator(BaseTranslator):
         ctx: vhdlParser.IdentifierContext,
     ) -> None:
         from_arch = False
-        arc_decl: Declaration | None = None
+        arch_decl: Declaration | None = None
 
         if self.last_node_array is None:
             return
@@ -48,8 +48,8 @@ class IdentifierTranslator(BaseTranslator):
 
         if self.last_arch and self.last_arch.checkDecl(identifier):
             from_arch = True
-            arc_decl: Declaration = self.design_unit.declarations.getLastElement()
-            identifier = f"{arc_decl.getName()}.{identifier}"
+            arch_decl: Declaration = self.design_unit.declarations.getLastElement()
+            identifier = f"{arch_decl.getName()}.{identifier}"
 
         index = self.last_node_array.addElement(
             Node(
@@ -62,7 +62,7 @@ class IdentifierTranslator(BaseTranslator):
 
         if from_arch:
             identifier_new, decl = self.design_unit.declarations.replaceDeclName(
-                arc_decl.identifier
+                arch_decl.identifier
             )
             identifier_new = identifier
         else:

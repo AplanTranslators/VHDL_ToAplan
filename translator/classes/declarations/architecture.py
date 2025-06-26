@@ -21,10 +21,9 @@ class ArchitectureBodyDeclTranslator(BaseTranslator):
             unit_identifier
         )  # type: ignore
 
-        initial_name = self.design_unit.ident_uniq_name_upper + "_" + beh_identifier  # type: ignore
         unique_identifier = f"{beh_identifier}_{self.design_unit.number}_t"
         typedef = Typedef(
-            unique_identifier,
+            beh_identifier,
             unique_identifier,
             ctx.getSourceInterval(),
             self._program.file_path,
@@ -33,9 +32,11 @@ class ArchitectureBodyDeclTranslator(BaseTranslator):
         self.addTypedef(typedef)
 
         data_check_type = DeclTypes.STRUCT
+   
         new_decl = Declaration(
             data_type=data_check_type,
             identifier=beh_identifier,
+            size_expression=unique_identifier,
             source_interval=ctx.getSourceInterval(),
             name_space_level=self.design_unit.number,
         )
@@ -46,13 +47,13 @@ class ArchitectureBodyDeclTranslator(BaseTranslator):
         ) = self.design_unit.declarations.addElement(new_decl)
 
         structure = Structure(
-            initial_name,
+            beh_identifier.upper(),
             ctx.getSourceInterval(),
         )
         if self.design_unit.input_parametrs is not None:  # type: ignore
             structure.parametrs += self.design_unit.input_parametrs  # type: ignore
         structure.addProtocol(
-            initial_name,
+            structure.getName(False),
             inside_the_task=self.inside_the_task,
         )
 
@@ -62,17 +63,3 @@ class ArchitectureBodyDeclTranslator(BaseTranslator):
 
     def exit(self, ctx: vhdlParser.Architecture_bodyContext):
         self.last_arch = None
-
-
-class ArchitectureDeclTranslator(BaseTranslator):
-    if typing.TYPE_CHECKING:
-        from translator.translator import Translator
-
-    def __init__(self, translator: "Translator"):
-        super().__init__(translator)
-
-    def translate(self, ctx: vhdlParser.Architecture_declarative_partContext) -> None:
-        pass
-
-        # if not self.last_beh_name:
-        #     raise ValueError("Unfound beh name")
